@@ -5,7 +5,7 @@ from termcolor import colored
 
 class Game:
     def __init__(self):
-        self.color_dict = {
+        self.termcolor_lookup = {
             "r": "red",
             "g": "green",
             "b": "blue",
@@ -13,7 +13,7 @@ class Game:
             "y": "yellow",
             "w": "white",
         }
-        self.colors = list(self.color_dict.keys())
+        self.colors = list(self.termcolor_lookup.keys())
         self.round = 9
         self.answer = []
         self.guess_board = self.init_guess_board()
@@ -109,13 +109,14 @@ def check_ans(game):
 
 def add_color(game, text_list) -> list:
     if text_list[0].isalpha():
-        return [colored(letter, game.color_dict[letter]) for letter in text_list]
+        return [colored(letter, game.termcolor_lookup[letter]) for letter in text_list]
     else:
         return text_list
 
 
 def draw_screen(game):
     # draw the board
+    print("      Guess            Score     ")
     for i, row in enumerate(game.guess_board):
         print("|", end="   ")
         print(*add_color(game, row), sep="  ", end="   ")
@@ -124,7 +125,9 @@ def draw_screen(game):
 
     # draw the text
     print("Guess 4 colors: ")
-    print("Colors:", *add_color(game, game.colors))
+    print("Color Options:", *add_color(game, game.colors))
+    print("Bl: # of correct colors in correct spot")
+    print("W: # of correct colors in incorrect spot")
 
 
 def main():
@@ -138,7 +141,8 @@ def main():
             draw_screen(game)
 
             if game.won():
-                print("Winner!")
+                winning_message = colored("Winner!", on_color="on_red")
+                print(winning_message)
                 break
 
             if game.round == -1:
