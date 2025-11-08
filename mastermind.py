@@ -68,7 +68,7 @@ def select_gamemode(game):
         elif choice == "2":
             game.answer = choices(game.colors, k=4)
             break
-        elif choice == "quit":
+        elif choice == "quit" or choice == "q":
             quit()
 
 
@@ -79,6 +79,8 @@ def get_input(game):
         if len(guess) == 4 and game.in_colors(guess):
             game.set_guess(guess)
             break
+        elif guess == "quit" or guess == "q":
+            quit()
         else:
             print("Pick 4 colors from list.")
 
