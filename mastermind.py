@@ -13,7 +13,7 @@ class Game:
             "y": "yellow",
             "w": "white",
         }
-        self.colors = list(self.termcolor_lookup.keys())
+        self.valid_colors = list(self.termcolor_lookup.keys())
         self.round = 9
         self.answer = []
         self.decoding_board = self.init_decoding_board()
@@ -21,23 +21,17 @@ class Game:
 
     # decoding_board[round #][col #]
     def init_decoding_board(self) -> list[list]:
-        return [["-" for col in range(4)] for row in range(10)]
+        return [["-" for _col in range(4)] for _row in range(10)]
 
     # key_board[round #][black_peg, white_peg]
     def init_score_board(self) -> list[list]:
-        return [["-" for col in range(2)] for row in range(10)]
+        return [["-" for _col in range(2)] for _row in range(10)]
 
     def set_guess(self, guess):
         self.decoding_board[self.round] = list(guess)
 
     def set_score(self, black, white):
         self.score_board[self.round] = [black, white]
-
-    def in_colors(self, guess) -> bool:
-        for i in guess:
-            if i not in self.colors:
-                return False
-        return True
 
     def won(self) -> bool:
         try:
@@ -46,11 +40,10 @@ class Game:
             return False
 
 
-def get_input(game):
+def handle_input(game):
     while True:
         guess = input().lower().replace(" ", "")
-
-        if len(guess) == 4 and game.in_colors(guess):
+        if len(guess) == 4 and all(color in game.valid_colors for color in guess):
             game.set_guess(guess)
             break
         elif guess == "quit" or guess == "q":
@@ -81,8 +74,8 @@ def check_ans(game):
     game.set_score(black_peg, white_peg)
 
 
-def add_color(game, text_list) -> list:
-    if text_list[0].isalpha():
+def color_text(game, text_list) -> list:
+    if all(letter.isalpha() and letter in game.valid_colors for letter in text_list):
         return [colored(letter, game.termcolor_lookup[letter]) for letter in text_list]
     else:
         return text_list
@@ -98,10 +91,10 @@ def menu_screen(game):
 
         seed()
         if choice == "1":
-            game.answer = sample(game.colors, 4)
+            game.answer = sample(game.valid_colors, 4)
             break
         elif choice == "2":
-            game.answer = choices(game.colors, k=4)
+            game.answer = choices(game.valid_colors, k=4)
             break
         elif choice == "quit" or choice == "q":
             quit()
@@ -112,13 +105,13 @@ def game_screen(game):
     print("      Guess            Score     ")
     for i, row in enumerate(game.decoding_board):
         print("|", end="   ")
-        print(*add_color(game, row), sep="  ", end="   ")
+        print(*color_text(game, row), sep="  ", end="   ")
         print("|   Bl:", game.score_board[i][0], " W:", game.score_board[i][1])
         print()
 
     # draw the text
     print("Guess 4 colors: ")
-    print("Color Options:", *add_color(game, game.colors))
+    print("Color Options:", *color_text(game, game.valid_colors))
     print("Bl: # of correct colors in correct spot")
     print("W: # of correct colors in incorrect spot")
     # print(game.answer) # debug
@@ -142,16 +135,15 @@ def main():
             game_screen(game)
 
             if game.won():
-                winning_message = colored("Winner!", on_color="on_red")
-                print(winning_message)
+                print("Winner!")
                 break
 
             if game.round == -1:
                 print("Loser!")
-                print("The answer was:", *add_color(game, game.answer))
+                print("The answer was:", *color_text(game, game.answer))
                 break
 
-            get_input(game)
+            handle_input(game)
             check_ans(game)
             game.round -= 1
 
