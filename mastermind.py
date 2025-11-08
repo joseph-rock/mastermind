@@ -1,4 +1,3 @@
-
 from os import system, name
 from random import seed, sample, choices
 from termcolor import colored
@@ -12,7 +11,7 @@ class Game:
             "b": "blue",
             "p": "magenta",
             "y": "yellow",
-            "w": "white"
+            "w": "white",
         }
         self.colors = list(self.color_dict.keys())
         self.round = 9
@@ -23,7 +22,7 @@ class Game:
     # decoding_board[round #][col #]
     def init_guess_board(self) -> list[list]:
         return [["-" for col in range(4)] for row in range(10)]
-    
+
     # key_board[round #][black_peg, white_peg]
     def init_score_board(self) -> list[list]:
         return [["-" for col in range(2)] for row in range(10)]
@@ -48,10 +47,10 @@ class Game:
 
 
 def clear_screen():
-    if name == 'nt': 
-        _ = system('cls')
+    if name == "nt":
+        _ = system("cls")
     else:
-        _ = system('clear')
+        _ = system("clear")
 
 
 def select_gamemode(game):
@@ -65,9 +64,9 @@ def select_gamemode(game):
         seed()
         if choice == "1":
             game.answer = sample(game.colors, 4)
-            break  
+            break
         elif choice == "2":
-            game.answer = choices(game.colors, k=4)           
+            game.answer = choices(game.colors, k=4)
             break
         elif choice == "quit":
             quit()
@@ -75,7 +74,7 @@ def select_gamemode(game):
 
 def get_input(game):
     while True:
-        guess = input().lower().replace(' ', '')
+        guess = input().lower().replace(" ", "")
 
         if len(guess) == 4 and game.in_colors(guess):
             game.set_guess(guess)
@@ -107,10 +106,10 @@ def check_ans(game):
 
 
 def add_color(game, text_list) -> list:
-        if text_list[0].isalpha():
-            return [colored(letter, game.color_dict[letter]) for letter in text_list]
-        else:
-            return text_list
+    if text_list[0].isalpha():
+        return [colored(letter, game.color_dict[letter]) for letter in text_list]
+    else:
+        return text_list
 
 
 def draw_screen(game):
@@ -144,7 +143,7 @@ def main():
                 print("Loser!")
                 print("The answer was:", *add_color(game, game.answer))
                 break
-            
+
             get_input(game)
             check_ans(game)
             game.round -= 1
