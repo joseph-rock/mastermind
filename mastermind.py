@@ -27,6 +27,12 @@ class Game:
     def init_score_board(self) -> list[list]:
         return [["-" for _col in range(2)] for _row in range(10)]
 
+    def generate_answer(self, repeat):
+        if repeat:
+            self.answer = choices(self.valid_colors, k=4)
+        else:
+            self.answer = sample(self.valid_colors, 4)
+
     def set_guess(self, guess):
         self.decoding_board[self.round] = list(guess)
 
@@ -38,6 +44,9 @@ class Game:
             return self.score_board[self.round + 1][0] == 4
         except IndexError:
             return False
+
+    def lost(self) -> bool:
+        return self.round < 0
 
 
 def handle_input(game):
@@ -89,12 +98,11 @@ def menu_screen(game):
         print("Type 'quit' to exit.")
         choice = input()
 
-        seed()
         if choice == "1":
-            game.answer = sample(game.valid_colors, 4)
+            game.generate_answer(False)
             break
         elif choice == "2":
-            game.answer = choices(game.valid_colors, k=4)
+            game.generate_answer(True)
             break
         elif choice == "quit" or choice == "q":
             quit()
@@ -125,29 +133,29 @@ def clear_screen():
 
 
 def main():
-    while True:
+    clear_screen()
+    game = Game()
+    menu_screen(game)
+
+    while game.round >= -1:
         clear_screen()
-        game = Game()
-        menu_screen(game)
+        game_screen(game)
 
-        while game.round >= -1:
-            clear_screen()
-            game_screen(game)
+        if game.won():
+            print("Winner!")
+            break
 
-            if game.won():
-                print("Winner!")
-                break
+        if game.lost():
+            print("Loser!")
+            print("The answer was:", *color_text(game, game.answer))
+            break
 
-            if game.round == -1:
-                print("Loser!")
-                print("The answer was:", *color_text(game, game.answer))
-                break
+        handle_input(game)
+        check_ans(game)
+        game.round -= 1
 
-            handle_input(game)
-            check_ans(game)
-            game.round -= 1
-
-        input("Press Enter")
+    input("Press Enter")
 
 
-main()
+while True:
+    main()
