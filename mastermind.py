@@ -138,30 +138,27 @@ def clear_screen():
         _ = system("clear")
 
 
-def main():
-    clear_screen()
-    game = Game()
-    menu_screen(game)
-
-    while game.round >= -1:
+if __name__ == "__main__":
+    while True:
         clear_screen()
-        game_screen(game)
+        game = Game()
+        menu_screen(game)
 
-        if game.won():
-            print("Winner!")
-            break
+        while game.round >= -1:
+            clear_screen()
+            game_screen(game)
 
-        if game.lost():
-            print("Loser!")
-            print("The answer was:", *color_text(game.answer))
-            break
+            if game.won():
+                print("Winner!")
+                break
 
-        handle_input(game)
-        check_ans(game)
-        game.round -= 1
+            if game.lost():
+                print("Loser!")
+                print("The answer was:", *color_text(game.answer))
+                break
 
-    input("Press Enter")
+            handle_input(game)
+            check_ans(game)
+            game.round -= 1
 
-
-while True:
-    main()
+        input("Press Enter")
