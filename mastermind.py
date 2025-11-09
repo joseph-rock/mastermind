@@ -92,8 +92,7 @@ def color_text(text_list) -> list:
         return [
             colored(letter, Pegs().termcolor_lookup[letter]) for letter in text_list
         ]
-    else:
-        return text_list
+    return text_list
 
 
 def menu_screen(game):
