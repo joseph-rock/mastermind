@@ -5,15 +5,6 @@ from termcolor import colored
 
 class Game:
     def __init__(self):
-        self.termcolor_lookup = {
-            "r": "red",
-            "g": "green",
-            "b": "blue",
-            "p": "magenta",
-            "y": "yellow",
-            "w": "white",
-        }
-        self.valid_colors = list(self.termcolor_lookup.keys())
         self.round = 9
         self.answer = []
         self.decoding_board = self.init_decoding_board()
@@ -29,9 +20,9 @@ class Game:
 
     def generate_answer(self, repeat):
         if repeat:
-            self.answer = choices(self.valid_colors, k=4)
+            self.answer = choices(Pegs().valid_colors, k=4)
         else:
-            self.answer = sample(self.valid_colors, 4)
+            self.answer = sample(Pegs().valid_colors, 4)
 
     def set_guess(self, guess):
         self.decoding_board[self.round] = list(guess)
@@ -49,10 +40,23 @@ class Game:
         return self.round < 0
 
 
+class Pegs:
+    def __init__(self):
+        self.termcolor_lookup = {
+            "r": "red",
+            "g": "green",
+            "b": "blue",
+            "p": "magenta",
+            "y": "yellow",
+            "w": "white",
+        }
+        self.valid_colors = list(self.termcolor_lookup.keys())
+
+
 def handle_input(game):
     while True:
         guess = input().lower().replace(" ", "")
-        if len(guess) == 4 and all(color in game.valid_colors for color in guess):
+        if len(guess) == 4 and all(color in Pegs().valid_colors for color in guess):
             game.set_guess(guess)
             break
         elif guess == "quit" or guess == "q":
@@ -83,9 +87,13 @@ def check_ans(game):
     game.set_score(black_peg, white_peg)
 
 
-def color_text(game, text_list) -> list:
-    if all(letter.isalpha() and letter in game.valid_colors for letter in text_list):
-        return [colored(letter, game.termcolor_lookup[letter]) for letter in text_list]
+def color_text(text_list) -> list:
+    if all(
+        letter.isalpha() and letter in Pegs().valid_colors for letter in text_list
+    ):
+        return [
+            colored(letter, Pegs().termcolor_lookup[letter]) for letter in text_list
+        ]
     else:
         return text_list
 
@@ -113,13 +121,13 @@ def game_screen(game):
     print("      Guess            Score     ")
     for i, row in enumerate(game.decoding_board):
         print("|", end="   ")
-        print(*color_text(game, row), sep="  ", end="   ")
+        print(*color_text(row), sep="  ", end="   ")
         print("|   Bl:", game.score_board[i][0], " W:", game.score_board[i][1])
         print()
 
     # draw the text
     print("Guess 4 colors: ")
-    print("Color Options:", *color_text(game, game.valid_colors))
+    print("Color Options:", *color_text(Pegs().valid_colors))
     print("Bl: # of correct colors in correct spot")
     print("W: # of correct colors in incorrect spot")
     # print(game.answer) # debug
@@ -147,7 +155,7 @@ def main():
 
         if game.lost():
             print("Loser!")
-            print("The answer was:", *color_text(game, game.answer))
+            print("The answer was:", *color_text(game.answer))
             break
 
         handle_input(game)
