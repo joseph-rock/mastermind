@@ -72,25 +72,23 @@ def check_ans(game):
     guess = game.decoding_board[game.round].copy()
 
     # check for correct color correct spot
-    for index, _ in enumerate(ans):
-        if ans[index] == guess[index]:
-            ans[index] = ""
-            guess[index] = ""
+    for i, _ in enumerate(ans):
+        if ans[i] == guess[i]:
+            ans[i] = ""
+            guess[i] = ""
             black_peg += 1
 
     # check for correct color incorrect spot
-    for i in guess:
-        if i != "" and i in ans:
-            ans.remove(i)
+    for color in guess:
+        if color != "" and color in ans:
+            ans.remove(color)
             white_peg += 1
 
     game.set_score(black_peg, white_peg)
 
 
 def color_text(text_list) -> list:
-    if all(
-        letter.isalpha() and letter in Pegs().valid_colors for letter in text_list
-    ):
+    if all(letter.isalpha() and letter in Pegs().valid_colors for letter in text_list):
         return [
             colored(letter, Pegs().termcolor_lookup[letter]) for letter in text_list
         ]
