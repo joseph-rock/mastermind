@@ -1,5 +1,5 @@
 from os import system, name
-from random import seed, sample, choices
+from random import sample, choices
 from termcolor import colored
 
 
